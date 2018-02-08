@@ -23,7 +23,7 @@
   {
     "dir_env": "ProgramW6432",
     "program_file": "Inkscape\\inkscape.exe",
-    "website_url": "https://inkscape.org/en/release/0.92.2/",
+    "website_url": "https://inkscape.org/en/release/",
     "selector": "div[id='sidecategory'] > h1",
     "converter": "multi"
   },
