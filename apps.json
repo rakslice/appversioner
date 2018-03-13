@@ -142,8 +142,8 @@
     "converter": "multi"
   },
   {
-    "dir_env": "USERPROFILE",
-    "program_file": "Documents\\hexchat-build\\x64\\rel\\hexchat.exe",
+    "dir_env": "ProgramW6432",
+    "program_file": "HexChat\\hexchat.exe",
     "website_url": "https://github.com/hexchat/hexchat/releases",
     "selector": "h1.release-title",
     "converter": "multi"
