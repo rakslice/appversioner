@@ -10,8 +10,8 @@
     "dir_env": "ProgramFiles(x86)",
     "program_file": "WinSCP\\WinSCP.exe",
     "website_url": "https://winscp.net/eng/download.php",
-    "selector": "main a",
-    "converter": "three"
+    "selector": "main a.btn",
+    "converter": "two"
   },
   {
     "dir_env": "ProgramFiles(x86)",
@@ -61,7 +61,7 @@
     "program_file": "Oracle\\VirtualBox\\VirtualBox.exe",
     "converter": "three",
     "website_url": "https://www.virtualbox.org/wiki/Downloads",
-    "selector": "div[id='wikipage'] > ul > li"
+    "selector": "div[id='wikipage'] h3"
   },
   {
     "dir_env": "ProgramFiles(x86)",
@@ -98,8 +98,8 @@
     "dir_env": "ProgramFiles(x86)",
     "program_file": "Mozilla Firefox\\firefox.exe",
     "website_url": "https://www.mozilla.org/en-US/firefox/releases/",
-    "converter": "multi",
-    "selector": "ol > li:nth-of-type(1) > ol > li",
+    "converter": "three_implicit",
+    "selector": "ol:nth-of-type(1) > li:nth-of-type(1) a",
     "selector_options": "last"
   },
   {
@@ -144,8 +144,8 @@
   {
     "dir_env": "USERPROFILE",
     "program_file": "Documents\\hexchat-build\\x64\\rel\\hexchat.exe",
-    "website_url": "https://hexchat.github.io/downloads.html",
-    "selector": "section",
+    "website_url": "https://github.com/hexchat/hexchat/releases",
+    "selector": "h1.release-title",
     "converter": "multi"
   },
   {
