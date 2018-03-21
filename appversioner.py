@@ -182,6 +182,10 @@ def main():
         else:
             program_filename = app.program_file
 
+        if not os.path.exists(program_filename):
+            print "%s not found" % program_filename
+            continue
+
         installed_version = get_file_info(program_filename.encode("utf-8"), app.version_attr)
         if app.version_attr == "ProductVersion":
             # print repr(installed_version)
