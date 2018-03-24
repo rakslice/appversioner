@@ -2,8 +2,6 @@
 It's a software update checker.
 
 Configuration in apps.json
-
-You can get a suitable cacert.pem from https://curl.haxx.se/docs/caextract.html
 """
 
 import argparse
@@ -11,6 +9,7 @@ import os
 import struct
 import urllib
 import re
+import sys
 
 import bs4
 import httplib2
@@ -66,6 +65,11 @@ def noop(s):
     return s
 
 
+def die(msg):
+    print >> sys.stderr, msg
+    sys.exit(1)
+
+
 CONVERTERS = {
     "float": extract_float,
     "multi": extract_multi_part,
@@ -92,7 +96,11 @@ class App(object):
         self.use_user_agent = use_user_agent
         self.web_version_offset = web_version_offset
 
-        self.h = httplib2.Http(".httplib2cache", ca_certs=os.path.join(script_path, "cacert.pem"))
+        cacert_filename = os.path.join(script_path, "cacert.pem")
+        if not os.path.isfile(cacert_filename):
+            die("cacert.pem (root certificates file for HTTPS) not found. You can get a suitable cacert.pem from https://curl.haxx.se/docs/caextract.html")
+
+        self.h = httplib2.Http(".httplib2cache", ca_certs=cacert_filename)
 
     def get_converter_func(self):
         return CONVERTERS[self.converter]
