@@ -46,8 +46,8 @@
     "dir_env": "ProgramFiles(x86)",
     "program_file": "Audacity\\audacity.exe",
     "converter": "three",
-    "website_url": "https://www.audacityteam.org/download/",
-    "selector": "div[id='stable_downloads'] h3"
+    "website_url": "https://www.audacityteam.org/download/windows/",
+    "selector": "div.entry-content li"
   },
   {
     "dir_env": "ProgramW6432",
