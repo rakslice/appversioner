@@ -137,9 +137,10 @@
     "dir_env": "APPDATA",
     "program_file": "..\\Local\\SourceTree\\SourceTree.exe",
     "website_url": "https://www.sourcetreeapp.com/",
-    "selector": "a[class='button--secondary-download']",
+    "selector": "div[class='product-tour-hero--video__link--secondary'] > a",
     "selector_options": "href",
-    "converter": "multi"
+    "converter": "multi",
+    "use_user_agent": 1
   },
   {
     "dir_env": "ProgramW6432",
