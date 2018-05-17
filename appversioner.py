@@ -44,11 +44,13 @@ def extract_multi_part(s, web_version_offset=None):
 def extract_three_part(s, web_version_offset=None):
     return int_version_parts(re.findall("\d+\.\d+\.\d+", s)[0], web_version_offset=web_version_offset)
 
+
 def extract_three_part_implicit(s, web_version_offset=None):
     out = int_version_parts(re.findall("\d+\.\d+(?:\.\d+)?", s)[0], web_version_offset=web_version_offset)    
     if len(out) == 2:
         out = tuple(list(out) + [0])
     return out
+
 
 def extract_two_part(s, web_version_offset=None):
     return int_version_parts(re.findall("\d+\.\d+", s)[0], web_version_offset=web_version_offset)
