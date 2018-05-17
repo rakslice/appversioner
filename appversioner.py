@@ -7,6 +7,7 @@ Configuration in apps.json
 import argparse
 import os
 import struct
+import traceback
 import urllib
 import re
 import sys
@@ -23,12 +24,20 @@ USER_AGENT = """Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KH
 script_path = os.path.dirname(os.path.abspath(__file__))
 
 
+class WebValueException(Exception):
+    pass
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--show-all", "-a",
                         default=False,
                         action="store_true",
                         help="Show versions for all software, not just those with updates")
+    parser.add_argument("--dump-page-on-error", "-d",
+                        default=False,
+                        action="store_true",
+                        help="Output the contents of the web page fetched to get the version from if there is an error")
     return parser.parse_args()
 
 
@@ -85,7 +94,7 @@ CONVERTERS = {
 class App(object):
     def __init__(self, program_file, website_url=None, version_attr="FileVersion", selector=None, converter="none",
                  selector_conditions=None, selector_finally=None, selector_options=None,
-                 use_user_agent=False, web_version_offset=None, dir_env=None):
+                 use_user_agent=False, web_version_offset=None, dir_env=None, dump_page_on_error=False):
         self.dir_env = dir_env
         self.program_file = program_file
         self.website_url = website_url
@@ -97,6 +106,7 @@ class App(object):
         self.converter = converter
         self.use_user_agent = use_user_agent
         self.web_version_offset = web_version_offset
+        self.dump_page_on_error = dump_page_on_error
 
         cacert_filename = os.path.join(script_path, "cacert.pem")
         if not os.path.isfile(cacert_filename):
@@ -131,6 +141,11 @@ class App(object):
                         filtered_tags.append(tag)
                 tags = filtered_tags
 
+        if len(tags) == 0:
+            if self.dump_page_on_error:
+                print soup
+            raise WebValueException("Selector '%s' didn't match anything on the page %s" % (self.selector, self.website_url))
+
         if self.selector_finally is not None:
             tags = tags[0].select(self.selector_finally)
 
@@ -140,9 +155,6 @@ class App(object):
             if self.selector_options == "last":
                 tags = tags[-1:]
 
-            if len(tags) == 0:
-                print soup
-
             value_str = "".join(tags[0].findAll(text=True))
         converter_func = self.get_converter_func()
         converter_kwargs = {}
@@ -151,9 +163,7 @@ class App(object):
         try:
             value = converter_func(value_str, **converter_kwargs)
         except IndexError:
-            print "website", self.website_url
-            print "value_str", repr(value_str)
-            raise
+            raise WebValueException("Can't find '%s' style version in selector '%s' text from page %s: %r" % (self.converter, self.selector, self.website_url, value_str))
 
         return value
 
@@ -182,7 +192,7 @@ def main():
 
     apps = read_json(os.path.join(script_path, "apps.json"))
 
-    apps = [App(**app) for app in apps]
+    apps = [App(dump_page_on_error=options.dump_page_on_error, **app) for app in apps]
 
     for app in apps:
         converter_func = CONVERTERS[app.converter]
@@ -216,18 +226,27 @@ def main():
         if app.website_url is None:
             ver_repr = ver_str(installed_version_val)
         else:
-            available_version_val = app.get_web_value()
-
-            if available_version_val == installed_version_val:
-                if not options.show_all:
-                    continue
-                ver_repr = ver_str(installed_version_val)
-            elif available_version_val < installed_version_val:
-                if not options.show_all:
-                    continue
-                ver_repr = "%s [%s]" % (ver_str(installed_version_val), ver_str(available_version_val))
+            # noinspection PyBroadException
+            try:
+                available_version_val = app.get_web_value()
+            except Exception, e:
+                if isinstance(e, WebValueException):
+                    # This is a known exception where the exception string is ready for output
+                    ver_repr = "Error getting version from web page: %s" % e
+                else:
+                    ver_repr = "Exception while getting version from web page: %r" % e
+                    traceback.print_exc()
             else:
-                ver_repr = "%s => %s %s" % (ver_str(installed_version_val), ver_str(available_version_val), app.website_url)
+                if available_version_val == installed_version_val:
+                    if not options.show_all:
+                        continue
+                    ver_repr = ver_str(installed_version_val)
+                elif available_version_val < installed_version_val:
+                    if not options.show_all:
+                        continue
+                    ver_repr = "%s [%s]" % (ver_str(installed_version_val), ver_str(available_version_val))
+                else:
+                    ver_repr = "%s => %s %s" % (ver_str(installed_version_val), ver_str(available_version_val), app.website_url)
 
         filename_proper = os.path.basename(program_filename)
 
