@@ -90,7 +90,7 @@
   {
     "dir_env": "ProgramFiles(x86)",
     "program_file": "KeePass Password Safe 2\\KeePass.exe",
-    "converter": "float",
+    "converter": "three_implicit",
     "website_url": "https://keepass.info/download.html",
     "selector": "th"
   },
