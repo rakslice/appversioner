@@ -17,7 +17,7 @@ import httplib2
 from get_file_info import get_file_info
 from util import read_json
 
-
+# TODO move this out; maybe there's something that can deliver a suitable UA for the platform
 USER_AGENT = """Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"""
 
 script_path = os.path.dirname(os.path.abspath(__file__))
