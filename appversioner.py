@@ -270,7 +270,7 @@ def inner_main():
                 ver_repr = "Can't get normalized version value '%s' from program file '%s' field '%s' using converter '%s'" % (installed_version, program_filename, app.version_attr, app.converter)
                 capture_exception()
 
-            if got_installed_version_val:
+            if not got_installed_version_val:
                 pass
             elif app.website_url is None:
                 ver_repr = ver_str(installed_version_val)
