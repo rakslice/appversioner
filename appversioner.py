@@ -5,6 +5,7 @@ Configuration in apps.json
 """
 
 import argparse
+import json
 import os
 import struct
 import traceback
@@ -17,6 +18,15 @@ import httplib2
 
 from get_file_info import get_file_info
 from util import read_json
+
+import raven
+
+
+# Report crashes to the maintainer with context
+REPORT_CRASHES = True
+
+raven_client = raven.Client('https://cd469360d77b439ba15d9dd1858ebc3a:601bb3882eff4ddaa5f1b44a69070222@sentry.io/1209952')
+
 
 # TODO move this out; maybe there's something that can deliver a suitable UA for the platform
 USER_AGENT = """Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"""
@@ -114,6 +124,11 @@ class App(object):
 
         self.h = httplib2.Http(".httplib2cache", ca_certs=cacert_filename)
 
+    def config(self):
+        return {key: getattr(self, key) for key in ("dir_env", "program_file", "website_url", "version_attr", "selector", "converter",
+                                                    "selector_conditions", "selector_finally", "selector_options", "use_user_agent",
+                                                    "web_version_offset")}
+
     def get_converter_func(self):
         return CONVERTERS[self.converter]
 
@@ -188,6 +203,15 @@ def ver_str(v):
 
 
 def main():
+    # noinspection PyBroadException
+    try:
+        crash_main()
+    except:
+        if REPORT_CRASHES:
+            raven_client.captureException()
+
+
+def crash_main():
     options = parse_args()
 
     apps = read_json(os.path.join(script_path, "apps.json"))
@@ -195,62 +219,65 @@ def main():
     apps = [App(dump_page_on_error=options.dump_page_on_error, **app) for app in apps]
 
     for app in apps:
-        converter_func = CONVERTERS[app.converter]
+        with raven_client.context:
+            raven_client.extra_context({"app_%s" % n: repr(val) for (n, val) in app.config().iteritems()})
 
-        if app.dir_env is not None:
-            program_filename = os.environ[app.dir_env] + "\\" + app.program_file
-        else:
-            program_filename = app.program_file
+            converter_func = CONVERTERS[app.converter]
 
-        if not os.path.exists(program_filename):
-            print "%s not found" % program_filename
-            continue
-
-        installed_version = get_file_info(program_filename.encode("utf-8"), app.version_attr)
-        if app.version_attr == "ProductVersion":
-            # print repr(installed_version)
-            assert installed_version.startswith("\xbd\x04\xef\xfe")
-            installed_version = ".".join(str(x) for x in reversed(struct.unpack("<HHHH", installed_version[12:12 + 8])))
-        elif installed_version.endswith("\x00"):
-            # it's a string
-            installed_version = installed_version[:-1].replace(",", ".")
-        else:
-            print repr(installed_version)
-            assert False, "%s unknown format" % program_filename
-        try:
-            installed_version_val = converter_func(installed_version)
-        except IndexError:
-            print "installed_version_str", installed_version
-            raise
-
-        if app.website_url is None:
-            ver_repr = ver_str(installed_version_val)
-        else:
-            # noinspection PyBroadException
-            try:
-                available_version_val = app.get_web_value()
-            except Exception, e:
-                if isinstance(e, WebValueException):
-                    # This is a known exception where the exception string is ready for output
-                    ver_repr = "Error getting version from web page: %s" % e
-                else:
-                    ver_repr = "Exception while getting version from web page: %r" % e
-                    traceback.print_exc()
+            if app.dir_env is not None:
+                program_filename = os.environ[app.dir_env] + "\\" + app.program_file
             else:
-                if available_version_val == installed_version_val:
-                    if not options.show_all:
-                        continue
-                    ver_repr = ver_str(installed_version_val)
-                elif available_version_val < installed_version_val:
-                    if not options.show_all:
-                        continue
-                    ver_repr = "%s [%s]" % (ver_str(installed_version_val), ver_str(available_version_val))
+                program_filename = app.program_file
+
+            if not os.path.exists(program_filename):
+                print "%s not found" % program_filename
+                continue
+
+            installed_version = get_file_info(program_filename.encode("utf-8"), app.version_attr)
+            if app.version_attr == "ProductVersion":
+                # print repr(installed_version)
+                assert installed_version.startswith("\xbd\x04\xef\xfe")
+                installed_version = ".".join(str(x) for x in reversed(struct.unpack("<HHHH", installed_version[12:12 + 8])))
+            elif installed_version.endswith("\x00"):
+                # it's a string
+                installed_version = installed_version[:-1].replace(",", ".")
+            else:
+                print repr(installed_version)
+                assert False, "%s unknown format" % program_filename
+            try:
+                installed_version_val = converter_func(installed_version)
+            except IndexError:
+                print "installed_version_str", installed_version
+                raise
+
+            if app.website_url is None:
+                ver_repr = ver_str(installed_version_val)
+            else:
+                # noinspection PyBroadException
+                try:
+                    available_version_val = app.get_web_value()
+                except Exception, e:
+                    if isinstance(e, WebValueException):
+                        # This is a known exception where the exception string is ready for output
+                        ver_repr = "Error getting version from web page: %s" % e
+                    else:
+                        ver_repr = "Exception while getting version from web page: %r" % e
+                        traceback.print_exc()
                 else:
-                    ver_repr = "%s => %s %s" % (ver_str(installed_version_val), ver_str(available_version_val), app.website_url)
+                    if available_version_val == installed_version_val:
+                        if not options.show_all:
+                            continue
+                        ver_repr = ver_str(installed_version_val)
+                    elif available_version_val < installed_version_val:
+                        if not options.show_all:
+                            continue
+                        ver_repr = "%s [%s]" % (ver_str(installed_version_val), ver_str(available_version_val))
+                    else:
+                        ver_repr = "%s => %s %s" % (ver_str(installed_version_val), ver_str(available_version_val), app.website_url)
 
-        filename_proper = os.path.basename(program_filename)
+            filename_proper = os.path.basename(program_filename)
 
-        print "%s, %s" % (filename_proper, ver_repr)
+            print "%s, %s" % (filename_proper, ver_repr)
 
 
 if __name__ == "__main__":
