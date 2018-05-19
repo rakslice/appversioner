@@ -5,7 +5,6 @@ Configuration in apps.json
 """
 
 import argparse
-import json
 import os
 import struct
 import traceback
@@ -24,6 +23,8 @@ import raven
 
 # Report crashes to the maintainer with context
 REPORT_CRASHES = True
+
+PAUSE_BEFORE_CRASH_REPORT = True
 
 raven_client = raven.Client('https://cd469360d77b439ba15d9dd1858ebc3a:601bb3882eff4ddaa5f1b44a69070222@sentry.io/1209952')
 
@@ -202,16 +203,28 @@ def ver_str(v):
         return v
 
 
+def pause():
+    sys.stdin.readline()
+
+
 def main():
     # noinspection PyBroadException
     try:
-        crash_main()
+        inner_main()
     except:
-        if REPORT_CRASHES:
-            raven_client.captureException()
+        capture_exception()
 
 
-def crash_main():
+def capture_exception():
+    if REPORT_CRASHES:
+        traceback.print_exc()
+        if PAUSE_BEFORE_CRASH_REPORT:
+            print "Press Enter to upload Exception with context to Sentry or Ctrl-Break/Ctrl-C to cancel"
+            pause()
+        raven_client.captureException()
+
+
+def inner_main():
     options = parse_args()
 
     apps = read_json(os.path.join(script_path, "apps.json"))
@@ -221,6 +234,8 @@ def crash_main():
     for app in apps:
         with raven_client.context:
             raven_client.extra_context({"app_%s" % n: repr(val) for (n, val) in app.config().iteritems()})
+
+            # raise Exception("hello, I am a test exception")
 
             converter_func = CONVERTERS[app.converter]
 
@@ -244,13 +259,20 @@ def crash_main():
             else:
                 print repr(installed_version)
                 assert False, "%s unknown format" % program_filename
+
+            got_installed_version_val = True
+            ver_repr = None
+
             try:
                 installed_version_val = converter_func(installed_version)
             except IndexError:
-                print "installed_version_str", installed_version
-                raise
+                got_installed_version_val = False
+                ver_repr = "Can't get normalized version value '%s' from program file '%s' field '%s' using converter '%s'" % (installed_version, program_filename, app.version_attr, app.converter)
+                capture_exception()
 
-            if app.website_url is None:
+            if got_installed_version_val:
+                pass
+            elif app.website_url is None:
                 ver_repr = ver_str(installed_version_val)
             else:
                 # noinspection PyBroadException
@@ -262,7 +284,7 @@ def crash_main():
                         ver_repr = "Error getting version from web page: %s" % e
                     else:
                         ver_repr = "Exception while getting version from web page: %r" % e
-                        traceback.print_exc()
+                        capture_exception()
                 else:
                     if available_version_val == installed_version_val:
                         if not options.show_all:
