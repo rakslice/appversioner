@@ -215,13 +215,17 @@ def main():
         capture_exception()
 
 
-def capture_exception():
+def capture_exception(**additional_data):
     if REPORT_CRASHES:
+        # NB: according to the source code of raven's context.merge for tags/extra fields, this merges with other extra data fields
+        raven_client.extra_context(additional_data)
         traceback.print_exc()
         if PAUSE_BEFORE_CRASH_REPORT:
             print "Press Enter to upload Exception with context to Sentry or Ctrl-Break/Ctrl-C to cancel"
             pause()
         raven_client.captureException()
+        # Remove any custom fields back out of the context so they don't get into any unrelated error reports
+        raven_client.extra_context({key: None for key in additional_data.keys()})
 
 
 def inner_main():
@@ -268,7 +272,7 @@ def inner_main():
             except IndexError:
                 got_installed_version_val = False
                 ver_repr = "Can't get normalized version value '%s' from program file '%s' field '%s' using converter '%s'" % (installed_version, program_filename, app.version_attr, app.converter)
-                capture_exception()
+                capture_exception(ver_repr=ver_repr)
 
             if not got_installed_version_val:
                 pass
@@ -284,7 +288,7 @@ def inner_main():
                         ver_repr = "Error getting version from web page: %s" % e
                     else:
                         ver_repr = "Exception while getting version from web page: %r" % e
-                        capture_exception()
+                        capture_exception(ver_repr=ver_repr)
                 else:
                     if available_version_val == installed_version_val:
                         if not options.show_all:
