@@ -25,7 +25,7 @@
     "program_file": "Inkscape\\inkscape.exe",
     "website_url": "https://inkscape.org/en/release/",
     "selector": "div[id='sidecategory'] > h1",
-    "converter": "multi"
+    "converter": "three_implicit"
   },
   {
     "dir_env": "ProgramFiles(x86)",
