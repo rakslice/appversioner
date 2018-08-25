@@ -129,8 +129,8 @@
     "dir_env": "ProgramFiles(x86)",
     "program_file": "Mozilla Thunderbird\\thunderbird.exe",
     "website_url": "https://www.mozilla.org/en-US/thunderbird/releases/",
-    "converter": "multi",
-    "selector": "ol > li:nth-of-type(1) > ol > li",
+    "converter": "three_implicit",
+    "selector": "ol:nth-of-type(1) > li:nth-of-type(1) a",
     "selector_options": "last"
   },
   {
