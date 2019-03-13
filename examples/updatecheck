@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e 
+
+SWDIR=~/Documents/appversioner
+VENVDIR=~/Documents/appversioner_virtualenv
+
+echo GIT PULL
+pushd "$SWDIR"
+git pull
+popd
+
+echo PIP UPDATE
+"$VENVDIR/Scripts/pip" install -r "$SWDIR/requirements.txt"
+
+echo ""
+echo ""
+echo "UPDATECHECK"
+echo ""
+set -x
+"$VENVDIR/Scripts/python" -u "$SWDIR/appversioner.py"
+
