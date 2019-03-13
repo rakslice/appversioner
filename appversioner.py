@@ -303,7 +303,7 @@ def inner_main():
                 installed_version_val = converter_func(installed_version)
             except IndexError:
                 got_installed_version_val = False
-                ver_repr = "Can't get normalized version value '%s' from program file '%s' field '%s' using converter '%s'" % (installed_version, program_filename, app.version_attr, app.converter)
+                ver_repr = "Can't get normalized version value '%r' from program file '%r' field '%r' using converter '%r'" % (installed_version, program_filename, app.version_attr, app.converter)
                 capture_exception(ver_repr=ver_repr)
 
             if not got_installed_version_val:
