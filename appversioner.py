@@ -29,6 +29,12 @@ PAUSE_BEFORE_CRASH_REPORT = True
 raven_client = raven.Client('https://cd469360d77b439ba15d9dd1858ebc3a:601bb3882eff4ddaa5f1b44a69070222@sentry.io/1209952')
 
 
+# These are special dir_env values that specify a series of environment-provided paths to search
+DIR_ENV_SETS = {
+    "ProgramFiles": ["ProgramW6432", "ProgramFiles(x86)"]
+}
+
+
 # TODO move this out; maybe there's something that can deliver a suitable UA for the platform
 USER_AGENT = """Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"""
 
@@ -228,6 +234,36 @@ def capture_exception(**additional_data):
         raven_client.extra_context({key: None for key in additional_data.keys()})
 
 
+def warn(s):
+    print >> sys.stderr, s
+
+
+def find_program_files(app):
+    """
+    :type app: App
+    :rtype: (bool, str)
+    """
+    if app.dir_env is None:
+        program_filenames = [app.program_file]
+    else:
+        if app.dir_env in DIR_ENV_SETS:
+            dir_envs = DIR_ENV_SETS[app.dir_env]
+        else:
+            dir_envs = [app.dir_env]
+        program_filenames = [os.environ[dir_env] + "\\" + app.program_file for dir_env in dir_envs]
+
+    program_filenames_found = [x for x in program_filenames if os.path.exists(x)]
+
+    if len(program_filenames_found) == 0:
+        warn("%s not found at: %s" % (app.program_file, ", ".join(program_filenames)))
+        return False, None
+
+    if len(program_filenames_found) > 1:
+        warn("Multiple files matching %s found: %s" % (app.program_file, ", ".join(program_filenames_found)))
+
+    return True, program_filenames_found[0]
+
+
 def inner_main():
     options = parse_args()
 
@@ -243,13 +279,8 @@ def inner_main():
 
             converter_func = CONVERTERS[app.converter]
 
-            if app.dir_env is not None:
-                program_filename = os.environ[app.dir_env] + "\\" + app.program_file
-            else:
-                program_filename = app.program_file
-
-            if not os.path.exists(program_filename):
-                print "%s not found" % program_filename
+            file_found, program_filename = find_program_files(app)
+            if not file_found:
                 continue
 
             installed_version = get_file_info(program_filename.encode("utf-8"), app.version_attr)
@@ -262,7 +293,8 @@ def inner_main():
                 installed_version = installed_version[:-1].replace(",", ".")
             else:
                 print repr(installed_version)
-                assert False, "%s unknown format" % program_filename
+                warn("%s has no version tag or is in an unknown format" % program_filename)
+                continue
 
             got_installed_version_val = True
             ver_repr = None

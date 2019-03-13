@@ -12,7 +12,7 @@ By default the script shows only the programs where a newer version is available
 
 | Setting    |  Description |
 | ---------- | ------------ |
-| `dir_env`  | Place to look for the program under, in the form of an environment variable, for instance `APPDATA`, `ProgramW6432`, `ProgramFiles(x86)`, `USERPROFILE`. See [the handy list in the Windows Defender docs](https://www.microsoft.com/en-us/wdsi/help/folder-variables) for more)  |
+| `dir_env`  | Place to look for the program under, in the form of an environment variable, for instance `APPDATA`, `ProgramW6432`, `ProgramFiles(x86)`, `USERPROFILE`. See [the handy list in the Windows Defender docs](https://www.microsoft.com/en-us/wdsi/help/folder-variables) for more).  You can use the special value `ProgramFiles` to look in both `ProgramW6432` and `ProgramFiles(x86)` (and warn if there is a file in both locations).  |
 | `program_file` | Path of the program file within that place |
 | `website_url`  | Web page to get the latest available version number from |
 | `selector`     | [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) that gets the part of the page with the version number |

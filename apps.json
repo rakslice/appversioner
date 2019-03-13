@@ -7,28 +7,28 @@
     "converter": "three"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "WinSCP\\WinSCP.exe",
     "website_url": "https://winscp.net/eng/download.php",
     "selector": "main a.btn",
     "converter": "two"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "MusicBrainz Picard\\picard.exe",
     "website_url": "https://picard.musicbrainz.org/downloads/",
     "selector": "ul[id='downloads'] > li td",
     "converter": "multi"
   },
   {
-    "dir_env": "ProgramW6432",
+    "dir_env": "ProgramFiles",
     "program_file": "Inkscape\\inkscape.exe",
     "website_url": "https://inkscape.org/en/release/",
     "selector": "div[id='sidecategory'] > h1",
     "converter": "three_implicit"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "Elaborate Bytes\\VirtualCloneDrive\\VCDPrefs.exe",
     "website_url": "https://www.elby.ch/en/download.html",
     "selector": "a[data-original-title='Virtual CloneDrive change log']",
@@ -36,35 +36,35 @@
     "version_attr": "ProductVersion"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "Belarc\\BelarcAdvisor\\BelarcAdvisor.exe",
     "converter": "two",
     "website_url": "https://filehippo.com/download_belarc_advisor/",
     "selector": "h1"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "Audacity\\audacity.exe",
     "converter": "three",
     "website_url": "https://www.audacityteam.org/download/windows/",
     "selector": "div.entry-content li"
   },
   {
-    "dir_env": "ProgramW6432",
+    "dir_env": "ProgramFiles",
     "program_file": "7-Zip\\7zFM.exe",
     "website_url": "http://www.7-zip.org/download.html",
     "selector": "body > table > tr > td:nth-of-type(2) > p",
     "converter": "float"
   },
   {
-    "dir_env": "ProgramW6432",
+    "dir_env": "ProgramFiles",
     "program_file": "Oracle\\VirtualBox\\VirtualBox.exe",
     "converter": "three",
     "website_url": "https://www.virtualbox.org/wiki/Downloads",
     "selector": "div[id='wikipage'] h3"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "Notepad++\\notepad++.exe",
     "website_url": "https://notepad-plus-plus.org/",
     "selector": "p[id='download']",
@@ -72,14 +72,14 @@
     "version_attr": "ProductVersion"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "PuTTY\\putty.exe",
     "website_url": "https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html",
     "selector": "h1",
     "converter": "float"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "Google\\Chrome\\Application\\chrome.exe",
     "website_url": "http://googlechromereleases.blogspot.com/atom.xml",
     "selector": "entry",
@@ -88,14 +88,14 @@
     "converter": "multi"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "KeePass Password Safe 2\\KeePass.exe",
     "converter": "three_implicit",
     "website_url": "https://keepass.info/download.html",
     "selector": "th"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "Mozilla Firefox\\firefox.exe",
     "website_url": "https://www.mozilla.org/en-US/firefox/releases/",
     "converter": "three_implicit",
@@ -103,14 +103,14 @@
     "selector_options": "last"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "Evernote\\Evernote\\Evernote.exe",
     "website_url": "https://filehippo.com/download_evernote/",
     "selector": "h1",
     "converter": "multi"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "Adobe\\Acrobat Reader DC\\Reader\\AcroRd32.exe",
     "website_url": "https://get.adobe.com/reader/",
     "selector": "strong",
@@ -119,14 +119,14 @@
     "use_user_agent": 1
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "Pidgin\\pidgin.exe",
     "website_url": "https://sourceforge.net/projects/pidgin/files/Pidgin/",
     "selector": "tbody > tr",
     "converter": "three"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "Mozilla Thunderbird\\thunderbird.exe",
     "website_url": "https://www.mozilla.org/en-US/thunderbird/releases/",
     "converter": "three_implicit",
@@ -143,21 +143,21 @@
     "use_user_agent": 1
   },
   {
-    "dir_env": "ProgramW6432",
+    "dir_env": "ProgramFiles",
     "program_file": "HexChat\\hexchat.exe",
     "website_url": "https://github.com/hexchat/hexchat/releases",
     "selector": "h1.release-title",
     "converter": "multi"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "foobar2000\\foobar2000.exe",
     "website_url": "https://www.foobar2000.org/download",
     "selector": "div[class='release_info'] > a",
     "converter": "three_implicit"
   },
   {
-    "dir_env": "ProgramFiles(x86)",
+    "dir_env": "ProgramFiles",
     "program_file": "VideoLAN\\VLC\\vlc.exe",
     "website_url": "https://www.videolan.org/vlc/download-windows.html",
     "selector": "span[id='downloadVersion']",
