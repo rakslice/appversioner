@@ -18,7 +18,8 @@
     "program_file": "MusicBrainz Picard\\picard.exe",
     "website_url": "https://picard.musicbrainz.org/downloads/",
     "selector": "ul[id='downloads'] > li td",
-    "converter": "multi"
+    "converter": "multi",
+    "version_attr": "ProductVersion"
   },
   {
     "dir_env": "ProgramFiles",
@@ -137,7 +138,7 @@
     "dir_env": "APPDATA",
     "program_file": "..\\Local\\SourceTree\\SourceTree.exe",
     "website_url": "https://www.sourcetreeapp.com/",
-    "selector": "div[class='product-tour-hero--video__link--secondary'] > a",
+    "selector": "a.default",
     "selector_options": "href",
     "converter": "multi",
     "use_user_agent": 1
@@ -146,7 +147,7 @@
     "dir_env": "ProgramFiles",
     "program_file": "HexChat\\hexchat.exe",
     "website_url": "https://github.com/hexchat/hexchat/releases",
-    "selector": "h1.release-title",
+    "selector": "div.release-header a",
     "converter": "multi"
   },
   {
