@@ -55,6 +55,10 @@ def parse_args():
                         default=False,
                         action="store_true",
                         help="Output the contents of the web page fetched to get the version from if there is an error")
+    parser.add_argument("--ignore-missing-programs",
+                        default=False,
+                        action="store_true",
+                        help="Don't show a warning if a program is not found on this system")
     return parser.parse_args()
 
 
@@ -238,9 +242,10 @@ def warn(s):
     print >> sys.stderr, s
 
 
-def find_program_files(app):
+def find_program_files(app, ignore_missing_programs):
     """
     :type app: App
+    :type ignore_missing_programs: bool
     :rtype: (bool, str)
     """
     if app.dir_env is None:
@@ -254,7 +259,7 @@ def find_program_files(app):
 
     program_filenames_found = [x for x in program_filenames if os.path.exists(x)]
 
-    if len(program_filenames_found) == 0:
+    if len(program_filenames_found) == 0 and not ignore_missing_programs:
         warn("%s not found at: %s" % (app.program_file, ", ".join(program_filenames)))
         return False, None
 
@@ -279,7 +284,7 @@ def inner_main():
 
             converter_func = CONVERTERS[app.converter]
 
-            file_found, program_filename = find_program_files(app)
+            file_found, program_filename = find_program_files(app, options.ignore_missing_programs)
             if not file_found:
                 continue
 
