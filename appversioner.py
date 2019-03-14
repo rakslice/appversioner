@@ -260,7 +260,7 @@ def find_program_files(app, ignore_missing_programs):
     program_filenames_found = [x for x in program_filenames if os.path.exists(x)]
 
     if len(program_filenames_found) == 0:
-        if ignore_missing_programs:
+        if not ignore_missing_programs:
             warn("%s not found at: %s" % (app.program_file, ", ".join(program_filenames)))
         return False, None
 
